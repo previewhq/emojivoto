@@ -1,4 +1,4 @@
-export IMAGE_TAG := v10
+export IMAGE_TAG := latest
 
 .PHONY: package protoc test
 
@@ -13,7 +13,7 @@ clean:
 protoc:
 	protoc -I .. ../proto/*.proto --go_out=plugins=grpc:gen
 
-package: protoc compile build-container
+package: protoc compile
 
 build-container:
 	docker build .. -t "buoyantio/$(svc_name):$(IMAGE_TAG)" --build-arg svc_name=$(svc_name)

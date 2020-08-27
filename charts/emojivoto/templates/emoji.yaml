@@ -1,0 +1,62 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: emoji
+  labels:
+    {{- include "emojivoto.labels" . | nindent 4 }}
+# Todo: From when Preview injects imagePullSecrets appropriately
+imagePullSecrets:
+  - name: previewhq-registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emoji
+  labels:
+    {{- include "emojivoto.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emoji-svc
+  template:
+    metadata:
+      labels:
+        app: emoji-svc
+        version: {{ .Values.image.tag }}
+    spec:
+      serviceAccountName: emoji
+      containers:
+      - env:
+        - name: GRPC_PORT
+          value: "8080"
+        - name: PROM_PORT
+          value: "8801"
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-emoji-svc
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: emoji-svc
+        ports:
+        - containerPort: 8080
+          name: grpc
+        - containerPort: 8801
+          name: prom
+        resources:
+          requests:
+            cpu: 100m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: emoji-svc
+  labels:
+    {{- include "emojivoto.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: emoji-svc
+  ports:
+  - name: grpc
+    port: 8080
+    targetPort: 8080
+  - name: prom
+    port: 8801
+    targetPort: 8801

@@ -1,0 +1,11 @@
+
+images:
+  - name: web
+    buildargs:
+      svc_name: "emojivoto-web"
+  - name: voting-svc
+    buildargs:
+      svc_name: "emojivoto-voting-svc"
+  - name: emoji-svc
+    buildargs:
+      svc_name: "emojivoto-emoji-svc"

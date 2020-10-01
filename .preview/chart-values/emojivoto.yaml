@@ -1,0 +1,15 @@
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - host: ${PREVIEWHQ_HOSTNAME}
+      paths:
+        - /
+  tls:
+   - secretName: tls-secret
+     hosts:
+       - ${PREVIEWHQ_CLUSTER_HOSTNAME}
+       - ${PREVIEWHQ_HOSTNAME}
